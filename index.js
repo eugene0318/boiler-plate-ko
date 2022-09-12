@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const config = require("./config/key");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
+const { auth } = require("./middleware/auth");
 
 //application/x-www-form-urlencoded분석
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -14,6 +15,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 const mongoose = require("mongoose");
+const { request } = require("express");
 mongoose
   .connect(config.mongoURI, {
     useNewUrlParser: true,
@@ -69,5 +71,21 @@ app.post("/login", (req, res) => {
           .json({ loginSuccess: true, userId: user.user_id });
       });
     });
+  });
+});
+// role 1 어드민 2 특정부서 어드민
+// role 0 일반유저 0아니면 관리자
+app.get("/api/users/auth", auth, (req, res) => {
+  //여기까지 미들웨어를 통과해 왔다는 얘기는 Authentication이 true라는 말
+
+  res.status(200).json({
+    _id: req.user._id,
+    isAdmin: req.user.role === 0 ? false : true,
+    isAuth: true,
+    email: req.user.email,
+    name: req.user.name,
+    lastname: req.user.lastname,
+    role: req.user.role,
+    image: req.user.image,
   });
 });
