@@ -19,7 +19,7 @@ const { request } = require("express");
 mongoose
   .connect(config.mongoURI, {
     //useNewUrlParser: true,
-    //useUnifiedTopology: true,
+    useUnifiedTopology: true,
   })
   .then(() => console.log("mongoDB connected..."))
   .catch((err) => console.log(err));
